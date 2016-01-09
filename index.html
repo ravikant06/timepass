@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+    <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
+</head>
+<body>
+<section class="section">
+    <ul class="chats" id="messagesDiv">
+        <!-- The chat messages will go here -->
+
+    </ul>
+</section>
+<footer style="display:block">
+    <form id="chatform">
+        <textarea id="messageInput" placeholder="Write something.."></textarea>
+        <input type="button" id="submit" value="SEND"/>
+    </form>
+</footer>
+<script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+<script src="js/sweetalert.min.js"></script>
+<script src="js/moment.min.js"></script>
+<script>
+
+    $(document).ready(function () {
+        
+        var myDataRef = new Firebase('https://boiling-heat-2353.firebaseio.com/');
+        var username;
+
+        // cache some jQuery objects
+        var section = $(".section"),
+                footer = $("footer"),
+                onConnect = $(".connected"),
+                inviteSomebody = $(".invite-textfield"),
+                personInside = $(".personinside"),
+                chatScreen = $(".chatscreen"),
+                left = $(".left"),
+                noMessages = $(".nomessages"),
+                tooManyPeople = $(".toomanypeople");
+
+        // some more jquery objects
+        var chatNickname = $(".nickname-chat"),
+                leftNickname = $(".nickname-left"),
+                loginForm = $(".loginForm"),
+                yourName = $("#yourName"),
+                yourEmail = $("#yourEmail"),
+                hisName = $("#hisName"),
+                hisEmail = $("#hisEmail"),
+                chatForm = $("#chatform"),
+                textarea = $("#messageInput"),
+                messageTimeSent = $(".timesent"),
+                chats = $(".chats");
+
+        swal({
+            title: "Login",
+            type: "input",
+            showCancelButton: false,
+            closeOnConfirm: false,
+            animation: "slide-from-top",
+            inputPlaceholder: "Type in a username"
+        }, function (inputValue) {
+            if (inputValue === false) return false;
+            if (inputValue === "") {
+                swal.showInputError("You need to enter a name!");
+                return false;
+            }
+            username = inputValue;
+            scrollToBottom();
+            swal({
+                title: "Nice!",
+                text: "Logging you in... <strong>" + username + "</strong>",
+                type: "success",
+                timer: 2000,
+                showConfirmButton: false,
+                html: true
+            });
+        });
+
+        $('#messageInput').keypress(function (e) {
+            if (e.keyCode == 13) {
+                e.preventDefault();
+                postChatMessage();
+            }
+        });
+        $('#submit').on('click', function () {
+            postChatMessage();
+        });
+        myDataRef.on('child_added', function (snapshot) {
+            var message = snapshot.val();
+            displayChatMessage(message.name, message.text);
+        });
+
+        // Update the relative time stamps on the chat messages every minute
+        
+        setInterval(function(){
+
+            messageTimeSent.each(function(){
+                var each = moment($(this).data('time'));
+                $(this).text(each.fromNow());
+            });
+
+        },60000);
+
+        function postChatMessage() {
+            var text = $('#messageInput').val();
+            myDataRef.push({name: username, text: text});
+            $('#messageInput').val('');
+            scrollToBottom();
+        }
+
+        function displayChatMessage(name, text) {
+            appendChatMessage(text, name, "img/unnamed.jpg", moment());
+        }
+
+        function appendChatMessage(msg, user, imgg, now) {
+
+            var li = $(
+                    '<li class="me">' +
+                    '<div class="image">' +
+                    '<img src=' + imgg + ' />' +
+                    '<b></b>' +
+                    '<i class="timesent" data-time=' + now + '></i> ' +
+                    '</div>' +
+                    '<p></p>' +
+                    '</li>');
+
+            // use the 'text' method to escape malicious user input
+            li.find('p').text(msg);
+            li.find('b').text(user);
+
+            chats.append(li);
+
+            messageTimeSent = $(".timesent");
+            messageTimeSent.last().text(now.fromNow());
+        }
+
+        function scrollToBottom() {
+            $("html, body").animate({scrollTop: $(document).height() - $(window).height()}, 1000);
+        }
+    });
+</script>
+</body>
+</html>
