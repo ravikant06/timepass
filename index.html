@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
     <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
-    <link href="http://fonts.googleapis.com/css?family=Open+Sans Condensed:300italic,300,700" rel="stylesheet" type="text/css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans Condensed:300italic,300,700" rel="stylesheet"
+          type="text/css">
     <title>Ignite Social</title>
 </head>
 <body>
@@ -102,7 +103,7 @@
         });
         myDataRef.on('child_added', function (snapshot) {
             var message = snapshot.val();
-            displayChatMessage(message.name, message.text);
+            displayChatMessage(message.name, message.text, message.time);
         });
 
         // Update the relative time stamps on the chat messages every minute
@@ -114,17 +115,17 @@
                 $(this).text(each.fromNow());
             });
 
-        }, 60000);
+        }, 5000);
 
         function postChatMessage() {
             var text = $('#messageInput').val();
-            myDataRef.push({name: username, text: text});
+            myDataRef.push({name: username, text: text, time: moment().valueOf()});
             $('#messageInput').val('');
             scrollToBottom();
         }
 
-        function displayChatMessage(name, text) {
-            appendChatMessage(text, name, "img/unnamed.jpg", moment());
+        function displayChatMessage(name, text, time) {
+            appendChatMessage(text, name, "img/unnamed.jpg", time);
         }
 
         function appendChatMessage(msg, user, imgg, now) {
@@ -147,6 +148,7 @@
 
             messageTimeSent = $(".timesent");
             messageTimeSent.last().text(now.fromNow());
+
         }
 
         function scrollToBottom() {
