@@ -4,13 +4,26 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="css/stylesheet.css">
     <link rel="stylesheet" type="text/css" href="css/sweetalert.css">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans Condensed:300italic,300,700" rel="stylesheet" type="text/css">
+    <title>Ignite Social</title>
 </head>
 <body>
-<section class="section">
-    <ul class="chats" id="messagesDiv">
-        <!-- The chat messages will go here -->
 
-    </ul>
+<header class="banner">
+
+    <h1 class="bannertext">
+        <a href="http://ignite.world" id="logo">Ignite<span>Social</span></a>
+    </h1>
+
+</header>
+
+<section class="section">
+    <div class="chatscreen" style="display: block">
+        <ul class="chats" id="messagesDiv">
+            <!-- The chat messages will go here -->
+
+        </ul>
+    </div>
 </section>
 <footer style="display:block">
     <form id="chatform">
@@ -25,7 +38,7 @@
 <script>
 
     $(document).ready(function () {
-        
+
         var myDataRef = new Firebase('https://boiling-heat-2353.firebaseio.com/');
         var username;
 
@@ -93,15 +106,15 @@
         });
 
         // Update the relative time stamps on the chat messages every minute
-        
-        setInterval(function(){
 
-            messageTimeSent.each(function(){
+        setInterval(function () {
+
+            messageTimeSent.each(function () {
                 var each = moment($(this).data('time'));
                 $(this).text(each.fromNow());
             });
 
-        },60000);
+        }, 60000);
 
         function postChatMessage() {
             var text = $('#messageInput').val();
