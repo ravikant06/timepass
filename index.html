@@ -158,7 +158,7 @@
                     var video = $('<iframe src="' + msg + '" width="420" height="345" frameBorder="0"></iframe>');
                     li.find('p').html(video);
                 } else {
-                    msg = (msg.indexOf("http://") === -1) ? "http://" + msg : msg;
+                    msg = (msg.indexOf("http") === -1) ? "http://" + msg : msg;
                     var anchor = $('<a class="preview" href="' + msg + '"></a>').append(msg);
                     li.find('p').html(anchor);
                 }
