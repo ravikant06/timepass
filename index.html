@@ -36,6 +36,7 @@
 <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
 <script src="js/sweetalert.min.js"></script>
 <script src="js/moment.min.js"></script>
+<script src="js/bootstrap-linkpreview.min.js"></script>
 <script>
 
     $(document).ready(function () {
@@ -98,15 +99,19 @@
                 postChatMessage();
             }
         });
+
         $('#submit').on('click', function () {
             postChatMessage();
         });
+
         myDataRef.on('child_added', function (snapshot) {
             var message = snapshot.val();
             displayChatMessage(message.name, message.text, message.time);
         });
 
-        // Update the relative time stamps on the chat messages every minute
+        $('a.preview').linkpreview();
+
+        // Update the relative time stamps on the chat messages every 5 seconds
 
         setInterval(function () {
 
@@ -140,19 +145,29 @@
                     '<p></p>' +
                     '</li>');
 
-            // use the 'text' method to escape malicious user input
-            li.find('p').text(msg);
+            if (!isURL(msg)) {
+                li.find('p').text(msg); // use the 'text' method to escape malicious user input
+            } else {
+                msg = (msg.indexOf("http://") === -1) ? "http://" + msg : msg;
+                var anchor = $('<a class="preview" href="' + msg + '"></a>').append(msg);
+                li.find('p').html(anchor);
+                $('a.preview').linkpreview();
+            }
             li.find('b').text(user);
 
             chats.append(li);
 
             messageTimeSent = $(".timesent");
-            messageTimeSent.last().text(now.fromNow());
+            messageTimeSent.last().text(new moment(now).fromNow());
 
         }
 
         function scrollToBottom() {
             $("html, body").animate({scrollTop: $(document).height() - $(window).height()}, 1000);
+        }
+
+        function isURL(value) {
+            return (/^((https?|ftp):\/\/)?(((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:)*@)?(((\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5])\.(\d|[1-9]\d|1\d\d|2[0-4]\d|25[0-5]))|((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?)(:\d*)?)(\/((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)+(\/(([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)*)*)?)?(\?((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|[\uE000-\uF8FF]|\/|\?)*)?(\#((([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[\da-f]{2})|[!\$&'\(\)\*\+,;=]|:|@)|\/|\?)*)?$/i).test(value);
         }
     });
 </script>

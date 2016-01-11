@@ -643,3 +643,16 @@ footer {
 	margin: 0 auto 200px;
 	overflow:hidden;
 }
+
+/* ------ Link preview ------*/
+
+.link-preview img {
+    max-height: 120px;
+    max-width: 100%;
+}
+.link-preview h4 {
+    margin-top: 0;
+}
+.link-preview .alert {
+    margin-bottom: 0;
+}
