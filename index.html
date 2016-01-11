@@ -109,7 +109,11 @@
             displayChatMessage(message.name, message.text, message.time);
         });
 
-        $('a.preview').linkpreview();
+        myDataRef.once('value', function (snapshot) {
+            $('a.preview').linkpreview({
+                onComplete: scrollToBottom()
+            });
+        });
 
         // Update the relative time stamps on the chat messages every 5 seconds
 
@@ -126,7 +130,9 @@
             var text = $('#messageInput').val();
             myDataRef.push({name: username, text: text, time: moment().valueOf()});
             $('#messageInput').val('');
-            scrollToBottom();
+            $('a.preview').linkpreview({
+                onComplete: scrollToBottom()
+            });
         }
 
         function displayChatMessage(name, text, time) {
@@ -145,13 +151,15 @@
                     '<p></p>' +
                     '</li>');
 
-            if (!isURL(msg)) {
+            if (msg.indexOf('youtube.com') !== -1) {
+                var video = $('<iframe src="' + msg + '" width="420" height="345" frameBorder="0"></iframe>');
+                li.find('p').html(video);
+            } else if (!isURL(msg)) {
                 li.find('p').text(msg); // use the 'text' method to escape malicious user input
             } else {
                 msg = (msg.indexOf("http://") === -1) ? "http://" + msg : msg;
                 var anchor = $('<a class="preview" href="' + msg + '"></a>').append(msg);
                 li.find('p').html(anchor);
-                $('a.preview').linkpreview();
             }
             li.find('b').text(user);
 
