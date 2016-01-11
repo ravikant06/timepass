@@ -151,15 +151,17 @@
                     '<p></p>' +
                     '</li>');
 
-            if (msg.indexOf('youtube.com') !== -1) {
-                var video = $('<iframe src="' + msg + '" width="420" height="345" frameBorder="0"></iframe>');
-                li.find('p').html(video);
-            } else if (!isURL(msg)) {
+            if (!isURL(msg)) {
                 li.find('p').text(msg); // use the 'text' method to escape malicious user input
             } else {
-                msg = (msg.indexOf("http://") === -1) ? "http://" + msg : msg;
-                var anchor = $('<a class="preview" href="' + msg + '"></a>').append(msg);
-                li.find('p').html(anchor);
+                if (msg.indexOf('youtube.com') !== -1) {
+                    var video = $('<iframe src="' + msg + '" width="420" height="345" frameBorder="0"></iframe>');
+                    li.find('p').html(video);
+                } else {
+                    msg = (msg.indexOf("http://") === -1) ? "http://" + msg : msg;
+                    var anchor = $('<a class="preview" href="' + msg + '"></a>').append(msg);
+                    li.find('p').html(anchor);
+                }
             }
             li.find('b').text(user);
 
